@@ -8,14 +8,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/channels")
+@RequestMapping("/videominer/channels")
 public class ChannelController {
     @Autowired
     ChannelRepository channelRepository;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public void addChannel(@RequestBody Channel channel) {
-        channelRepository.save(channel);
+    public Channel addChannel(@RequestBody Channel channel) {
+        return channelRepository.save(channel);
     }
 }

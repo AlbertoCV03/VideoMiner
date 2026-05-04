@@ -51,7 +51,7 @@ public class Caption {
     public String toString() {
         return "Caption{" +
                 "id='" + id + '\'' +
-                ", name='" + link + '\'' +
+                ", link='" + link + '\'' +
                 ", language='" + language + '\'' +
                 '}';
     }
