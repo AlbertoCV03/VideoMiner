@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/videominer/channels")
 public class ChannelController {
@@ -17,5 +19,11 @@ public class ChannelController {
     @PostMapping
     public Channel addChannel(@RequestBody Channel channel) {
         return channelRepository.save(channel);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping
+    public List<Channel> getAllChannels(){
+        return channelRepository.findAll();
     }
 }
