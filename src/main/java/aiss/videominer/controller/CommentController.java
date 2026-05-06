@@ -4,6 +4,8 @@ import aiss.videominer.model.Comment;
 import aiss.videominer.model.Video;
 import aiss.videominer.repository.CommentRepository;
 import aiss.videominer.repository.VideoRepository;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -45,6 +47,26 @@ public class CommentController {
     public Comment getComment(@PathVariable long commentId){
         Optional<Comment> comment = commentRepository.findById(commentId);
         return comment.get();
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping("/comments/{id}")
+    public void update(@Valid @RequestBody Comment updatedComment, @PathVariable long id){
+        Optional<Comment> comment_data = commentRepository.findById(id);
+        Comment comment = comment_data.get();
+
+        comment.setText(updatedComment.getText());
+        comment.setCreatedOn(updatedComment.getCreatedOn());
+
+        commentRepository.save(comment);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("comments/{id}")
+    public void delete(@PathVariable long id){
+        if(commentRepository.existsById(id)){
+            commentRepository.deleteById(id);
+        }
     }
 
 }
