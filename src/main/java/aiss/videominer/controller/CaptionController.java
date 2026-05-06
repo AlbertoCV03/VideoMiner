@@ -43,14 +43,14 @@ public class CaptionController {
     }
 
     @GetMapping("/captions/{captionId}")
-    public Caption getCaption(@PathVariable long captionId){
+    public Caption getCaption(@PathVariable String captionId){
         Optional<Caption> caption = captionRepository.findById(captionId);
         return caption.get();
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/captions/{id}")
-    public void update(@Valid @RequestBody Caption updatedCaption, @PathVariable long id){
+    public void update(@Valid @RequestBody Caption updatedCaption, @PathVariable String id){
         Optional<Caption> caption_data = captionRepository.findById(id);
         Caption caption = caption_data.get();
 
@@ -62,7 +62,7 @@ public class CaptionController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("captions/{id}")
-    public void delete(@PathVariable long id){
+    public void delete(@PathVariable String id){
         if(captionRepository.existsById(id)){
             captionRepository.deleteById(id);
         }
