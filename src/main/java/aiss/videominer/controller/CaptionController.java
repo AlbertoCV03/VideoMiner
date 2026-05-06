@@ -20,10 +20,24 @@ public class CaptionController {
     @Autowired
     CaptionRepository captionRepository;
 
+    @Autowired
+    VideoController videoController;
+
     @GetMapping("/videos/{videoId}/captions")
-    public List<Caption> getAllCaptions(@PathVariable long videoId){
+    public List<Caption> getAllCaptionsByVideoId(@PathVariable long videoId){
         Optional<Video> video = videoRepository.findById(videoId);
         return new ArrayList<>(video.get().getCaptions());
+    }
+
+    @GetMapping("/captions")
+    public List<Caption> getAllCaptions(){
+        List<Video> videos = videoController.getAllVideos();
+        List<Caption> captions = new ArrayList<>();
+
+        for(Video video: videos){
+            captions.addAll(video.getCaptions());
+        }
+        return captions;
     }
 
     @GetMapping("/captions/{captionId}")

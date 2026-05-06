@@ -20,11 +20,26 @@ public class CommentController {
     @Autowired
     CommentRepository commentRepository;
 
+    @Autowired
+    VideoController videoController;
+
     @GetMapping("/videos/{videoId}/comments")
-    public List<Comment> getAllComments(@PathVariable long videoId){
+    public List<Comment> getAllCommentsByVideoId(@PathVariable long videoId){
         Optional<Video> video = videoRepository.findById(videoId);
         return new ArrayList<>(video.get().getComments());
     }
+
+    @GetMapping("/comments")
+    public List<Comment> getAllComments(){
+        List<Video> videos = videoController.getAllVideos();
+        List<Comment> comments = new ArrayList<>();
+
+        for(Video video: videos){
+            comments.addAll(video.getComments());
+        }
+        return comments;
+    }
+
 
     @GetMapping("/comments/{commentId}")
     public Comment getComment(@PathVariable long commentId){
