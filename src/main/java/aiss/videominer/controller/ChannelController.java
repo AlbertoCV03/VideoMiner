@@ -37,7 +37,7 @@ public class ChannelController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
-    public void update(@Valid @RequestBody Channel updatedChannel, @PathVariable long id){
+    public void update(@Valid @RequestBody Channel updatedChannel, @PathVariable String id){
         Optional<Channel> channel_data = channelRepository.findById(id);
         Channel channel = channel_data.get();
 
@@ -51,7 +51,7 @@ public class ChannelController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable long id){
+    public void delete(@PathVariable String id){
         if(channelRepository.existsById(id)){
             channelRepository.deleteById(id);
         }
