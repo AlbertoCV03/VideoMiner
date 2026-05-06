@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/videominer/channels")
@@ -25,5 +26,11 @@ public class ChannelController {
     @GetMapping
     public List<Channel> getAllChannels(){
         return channelRepository.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Channel getChannel(@PathVariable long id) {
+        Optional<Channel> channel = channelRepository.findById(id);
+        return channel.get();
     }
 }

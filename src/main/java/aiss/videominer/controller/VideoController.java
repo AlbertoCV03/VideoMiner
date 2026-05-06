@@ -1,0 +1,33 @@
+package aiss.videominer.controller;
+
+import aiss.videominer.model.Channel;
+import aiss.videominer.model.Video;
+import aiss.videominer.repository.ChannelRepository;
+import aiss.videominer.repository.VideoRepository;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/videominer")
+public class VideoController {
+    @autowired
+    ChannelRepository channelRepository;
+
+    @autowired
+    VideoRepository videoRepository;
+
+    @GetMapping("/channels/{channelId}/videos")
+    public List<Video> getAllVideos(@PathVariable long channelId){
+        Optional<Channel> channel = channelRepository.findById(channelId);
+        return new ArrayList<>(channel.get().getVideos());
+    }
+
+    @GetMapping("/videos/{videoId}")
+    public Video getVideo(@PathVariable long videoId){
+        Optional<Video> video = videoRepository.findById(videoId);
+        return video.get();
+    }
+
+}
