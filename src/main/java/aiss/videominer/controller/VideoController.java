@@ -21,9 +21,20 @@ public class VideoController {
     VideoRepository videoRepository;
 
     @GetMapping("/channels/{channelId}/videos")
-    public List<Video> getAllVideos(@PathVariable long channelId){
+    public List<Video> getAllVideosByChannelId(@PathVariable long channelId){
         Optional<Channel> channel = channelRepository.findById(channelId);
         return new ArrayList<>(channel.get().getVideos());
+    }
+
+    @GetMapping("/videos")
+    public List<Video> getAllVideos(){
+        List<Channel> channels= channelRepository.findAll();
+        List<Video> videos = new ArrayList<>();
+
+        for(Channel channel: channels){
+            videos.addAll(channel.getVideos());
+        }
+        return videos;
     }
 
     @GetMapping("/videos/{videoId}")
