@@ -4,6 +4,8 @@ import aiss.videominer.model.Comment;
 import aiss.videominer.model.Video;
 import aiss.videominer.repository.CommentRepository;
 import aiss.videominer.repository.VideoRepository;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,16 +22,51 @@ public class CommentController {
     @Autowired
     CommentRepository commentRepository;
 
+    @Autowired
+    VideoController videoController;
+
     @GetMapping("/videos/{videoId}/comments")
-    public List<Comment> getAllComments(@PathVariable long videoId){
+    public List<Comment> getAllCommentsByVideoId(@PathVariable long videoId){
         Optional<Video> video = videoRepository.findById(videoId);
         return new ArrayList<>(video.get().getComments());
     }
+
+    @GetMapping("/comments")
+    public List<Comment> getAllComments(){
+        List<Video> videos = videoController.getAllVideos();
+        List<Comment> comments = new ArrayList<>();
+
+        for(Video video: videos){
+            comments.addAll(video.getComments());
+        }
+        return comments;
+    }
+
 
     @GetMapping("/comments/{commentId}")
     public Comment getComment(@PathVariable long commentId){
         Optional<Comment> comment = commentRepository.findById(commentId);
         return comment.get();
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping("/comments/{id}")
+    public void update(@Valid @RequestBody Comment updatedComment, @PathVariable long id){
+        Optional<Comment> comment_data = commentRepository.findById(id);
+        Comment comment = comment_data.get();
+
+        comment.setText(updatedComment.getText());
+        comment.setCreatedOn(updatedComment.getCreatedOn());
+
+        commentRepository.save(comment);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("comments/{id}")
+    public void delete(@PathVariable long id){
+        if(commentRepository.existsById(id)){
+            commentRepository.deleteById(id);
+        }
     }
 
 }
