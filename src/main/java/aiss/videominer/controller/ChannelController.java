@@ -29,7 +29,7 @@ public class ChannelController {
     }
 
     @GetMapping("/{id}")
-    public Channel getChannel(@PathVariable long id) {
+    public Channel getChannel(@PathVariable String id) {
         Optional<Channel> channel = channelRepository.findById(id);
         return channel.get();
     }
