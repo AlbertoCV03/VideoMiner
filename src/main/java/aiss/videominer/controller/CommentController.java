@@ -26,7 +26,7 @@ public class CommentController {
     VideoController videoController;
 
     @GetMapping("/videos/{videoId}/comments")
-    public List<Comment> getAllCommentsByVideoId(@PathVariable long videoId){
+    public List<Comment> getAllCommentsByVideoId(@PathVariable String videoId){
         Optional<Video> video = videoRepository.findById(videoId);
         return new ArrayList<>(video.get().getComments());
     }
@@ -44,14 +44,14 @@ public class CommentController {
 
 
     @GetMapping("/comments/{commentId}")
-    public Comment getComment(@PathVariable long commentId){
+    public Comment getComment(@PathVariable String commentId){
         Optional<Comment> comment = commentRepository.findById(commentId);
         return comment.get();
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/comments/{id}")
-    public void update(@Valid @RequestBody Comment updatedComment, @PathVariable long id){
+    public void update(@Valid @RequestBody Comment updatedComment, @PathVariable String id){
         Optional<Comment> comment_data = commentRepository.findById(id);
         Comment comment = comment_data.get();
 
@@ -63,7 +63,7 @@ public class CommentController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("comments/{id}")
-    public void delete(@PathVariable long id){
+    public void delete(@PathVariable String id){
         if(commentRepository.existsById(id)){
             commentRepository.deleteById(id);
         }

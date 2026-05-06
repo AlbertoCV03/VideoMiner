@@ -26,7 +26,7 @@ public class CaptionController {
     VideoController videoController;
 
     @GetMapping("/videos/{videoId}/captions")
-    public List<Caption> getAllCaptionsByVideoId(@PathVariable long videoId){
+    public List<Caption> getAllCaptionsByVideoId(@PathVariable String videoId){
         Optional<Video> video = videoRepository.findById(videoId);
         return new ArrayList<>(video.get().getCaptions());
     }

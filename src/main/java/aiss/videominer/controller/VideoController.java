@@ -40,14 +40,14 @@ public class VideoController {
     }
 
     @GetMapping("/videos/{videoId}")
-    public Video getVideo(@PathVariable long videoId){
+    public Video getVideo(@PathVariable String videoId){
         Optional<Video> video = videoRepository.findById(videoId);
         return video.get();
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/videos/{id}")
-    public void update(@Valid @RequestBody Video updatedVideo, @PathVariable long id){
+    public void update(@Valid @RequestBody Video updatedVideo, @PathVariable String id){
         Optional<Video> video_data = videoRepository.findById(id);
         Video video = video_data.get();
 
@@ -63,7 +63,7 @@ public class VideoController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/videos/{id}")
-    public void delete(@PathVariable long id){
+    public void delete(@PathVariable String id){
         if(videoRepository.existsById(id)){
             videoRepository.deleteById(id);
         }
