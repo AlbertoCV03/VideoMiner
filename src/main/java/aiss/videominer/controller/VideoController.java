@@ -4,6 +4,8 @@ import aiss.videominer.model.Channel;
 import aiss.videominer.model.Video;
 import aiss.videominer.repository.ChannelRepository;
 import aiss.videominer.repository.VideoRepository;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +14,10 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/videominer")
 public class VideoController {
-    @autowired
+    @Autowired
     ChannelRepository channelRepository;
 
-    @autowired
+    @Autowired
     VideoRepository videoRepository;
 
     @GetMapping("/channels/{channelId}/videos")

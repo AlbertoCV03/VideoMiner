@@ -4,17 +4,20 @@ import aiss.videominer.model.Caption;
 import aiss.videominer.model.Video;
 import aiss.videominer.repository.CaptionRepository;
 import aiss.videominer.repository.VideoRepository;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/videominer")
 public class CaptionController {
-    @autowired
+    @Autowired
     VideoRepository videoRepository;
 
-    @autowired
+    @Autowired
     CaptionRepository captionRepository;
 
     @GetMapping("/videos/{videoId}/captions")

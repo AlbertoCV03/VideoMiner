@@ -4,17 +4,20 @@ import aiss.videominer.model.Comment;
 import aiss.videominer.model.Video;
 import aiss.videominer.repository.CommentRepository;
 import aiss.videominer.repository.VideoRepository;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/videominer")
 public class CommentController {
-    @autowired
+    @Autowired
     VideoRepository videoRepository;
 
-    @autowired
+    @Autowired
     CommentRepository commentRepository;
 
     @GetMapping("/videos/{videoId}/comments")
