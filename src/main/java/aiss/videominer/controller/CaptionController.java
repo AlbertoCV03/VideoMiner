@@ -42,13 +42,7 @@ public class CaptionController {
             description = "Gets all the captions from the database")
     @GetMapping("/captions")
     public List<Caption> getAllCaptions() {
-        List<Video> videos = videoController.getAllVideos();
-        List<Caption> captions = new ArrayList<>();
-
-        for (Video video : videos) {
-            captions.addAll(video.getCaptions());
-        }
-        return captions;
+        return captionRepository.findAll();
     }
 
     @Operation(
