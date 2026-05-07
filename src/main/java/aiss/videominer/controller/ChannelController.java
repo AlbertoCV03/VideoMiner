@@ -1,6 +1,6 @@
 package aiss.videominer.controller;
 
-
+import aiss.videominer.exception.ResourceNotFoundException;
 import aiss.videominer.model.Channel;
 import aiss.videominer.repository.ChannelRepository;
 import jakarta.validation.Valid;
@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/videominer/channels")
@@ -25,21 +24,21 @@ public class ChannelController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<Channel> getAllChannels(){
+    public List<Channel> getAllChannels() {
         return channelRepository.findAll();
     }
 
     @GetMapping("/{id}")
     public Channel getChannel(@PathVariable String id) {
-        Optional<Channel> channel = channelRepository.findById(id);
-        return channel.get();
+        return channelRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Channel", id));
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
-    public void update(@Valid @RequestBody Channel updatedChannel, @PathVariable String id){
-        Optional<Channel> channel_data = channelRepository.findById(id);
-        Channel channel = channel_data.get();
+    public void update(@Valid @RequestBody Channel updatedChannel, @PathVariable String id) {
+        Channel channel = channelRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Channel", id));
 
         channel.setDescription(updatedChannel.getDescription());
         channel.setName(updatedChannel.getName());
@@ -51,8 +50,8 @@ public class ChannelController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable String id){
-        if(channelRepository.existsById(id)){
+    public void delete(@PathVariable String id) {
+        if (channelRepository.existsById(id)) {
             channelRepository.deleteById(id);
         }
     }

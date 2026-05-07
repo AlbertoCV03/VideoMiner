@@ -1,5 +1,8 @@
 package aiss.videominer.controller;
 
+import aiss.videominer.exception.CommentNotFoundException;
+import aiss.videominer.exception.ResourceNotFoundException;
+import aiss.videominer.exception.VideoNotFoundException;
 import aiss.videominer.model.Comment;
 import aiss.videominer.model.Video;
 import aiss.videominer.repository.CommentRepository;
@@ -26,34 +29,34 @@ public class CommentController {
     VideoController videoController;
 
     @GetMapping("/videos/{videoId}/comments")
-    public List<Comment> getAllCommentsByVideoId(@PathVariable String videoId){
-        Optional<Video> video = videoRepository.findById(videoId);
-        return new ArrayList<>(video.get().getComments());
+    public List<Comment> getAllCommentsByVideoId(@PathVariable String videoId) {
+        Video video = videoRepository.findById(videoId)
+                .orElseThrow(() -> new VideoNotFoundException(videoId));
+        return new ArrayList<>(video.getComments());
     }
 
     @GetMapping("/comments")
-    public List<Comment> getAllComments(){
+    public List<Comment> getAllComments() {
         List<Video> videos = videoController.getAllVideos();
         List<Comment> comments = new ArrayList<>();
 
-        for(Video video: videos){
+        for (Video video : videos) {
             comments.addAll(video.getComments());
         }
         return comments;
     }
 
-
     @GetMapping("/comments/{commentId}")
-    public Comment getComment(@PathVariable String commentId){
-        Optional<Comment> comment = commentRepository.findById(commentId);
-        return comment.get();
+    public Comment getComment(@PathVariable String commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment", commentId));
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/comments/{id}")
-    public void update(@Valid @RequestBody Comment updatedComment, @PathVariable String id){
-        Optional<Comment> comment_data = commentRepository.findById(id);
-        Comment comment = comment_data.get();
+    public void update(@Valid @RequestBody Comment updatedComment, @PathVariable String id) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment", id));
 
         comment.setText(updatedComment.getText());
         comment.setCreatedOn(updatedComment.getCreatedOn());
@@ -63,8 +66,8 @@ public class CommentController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("comments/{id}")
-    public void delete(@PathVariable String id){
-        if(commentRepository.existsById(id)){
+    public void delete(@PathVariable String id) {
+        if (commentRepository.existsById(id)) {
             commentRepository.deleteById(id);
         }
     }

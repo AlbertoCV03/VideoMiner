@@ -1,5 +1,6 @@
 package aiss.videominer.controller;
 
+import aiss.videominer.exception.ResourceNotFoundException;
 import aiss.videominer.model.Caption;
 import aiss.videominer.model.Video;
 import aiss.videominer.repository.CaptionRepository;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/videominer")
@@ -26,33 +26,34 @@ public class CaptionController {
     VideoController videoController;
 
     @GetMapping("/videos/{videoId}/captions")
-    public List<Caption> getAllCaptionsByVideoId(@PathVariable String videoId){
-        Optional<Video> video = videoRepository.findById(videoId);
-        return new ArrayList<>(video.get().getCaptions());
+    public List<Caption> getAllCaptionsByVideoId(@PathVariable String videoId) {
+        Video video = videoRepository.findById(videoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Video", videoId));
+        return new ArrayList<>(video.getCaptions());
     }
 
     @GetMapping("/captions")
-    public List<Caption> getAllCaptions(){
+    public List<Caption> getAllCaptions() {
         List<Video> videos = videoController.getAllVideos();
         List<Caption> captions = new ArrayList<>();
 
-        for(Video video: videos){
+        for (Video video : videos) {
             captions.addAll(video.getCaptions());
         }
         return captions;
     }
 
     @GetMapping("/captions/{captionId}")
-    public Caption getCaption(@PathVariable String captionId){
-        Optional<Caption> caption = captionRepository.findById(captionId);
-        return caption.get();
+    public Caption getCaption(@PathVariable String captionId) {
+        return captionRepository.findById(captionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Caption", captionId));
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/captions/{id}")
-    public void update(@Valid @RequestBody Caption updatedCaption, @PathVariable String id){
-        Optional<Caption> caption_data = captionRepository.findById(id);
-        Caption caption = caption_data.get();
+    public void update(@Valid @RequestBody Caption updatedCaption, @PathVariable String id) {
+        Caption caption = captionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Caption", id));
 
         caption.setLink(updatedCaption.getLink());
         caption.setLanguage(updatedCaption.getLanguage());
@@ -62,8 +63,8 @@ public class CaptionController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("captions/{id}")
-    public void delete(@PathVariable String id){
-        if(captionRepository.existsById(id)){
+    public void delete(@PathVariable String id) {
+        if (captionRepository.existsById(id)) {
             captionRepository.deleteById(id);
         }
     }
