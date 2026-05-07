@@ -26,8 +26,8 @@ public class VideoController {
     VideoRepository videoRepository;
 
     @Operation(
-            summary = "Gets all videos from a channel",
-            description = "Gets all the videos from a specified channel")
+            summary = "Get all videos from a channel",
+            description = "Get all the videos from a specified channel")
     @GetMapping("/channels/{channelId}/videos")
     public List<Video> getAllVideosByChannelId(@PathVariable String channelId) {
         Channel channel = channelRepository.findById(channelId)
@@ -37,7 +37,7 @@ public class VideoController {
 
     @Operation(
             summary = "Get all videos",
-            description = "Gets all the videos from the database")
+            description = "Get all the videos from the database")
     @GetMapping("/videos")
     public List<Video> getAllVideos() {
         List<Channel> channels = channelRepository.findAll();
@@ -51,7 +51,7 @@ public class VideoController {
 
     @Operation(
             summary = "Get a video",
-            description = "Gets the specified video from the database")
+            description = "Get the specified video from the database")
     @GetMapping("/videos/{videoId}")
     public Video getVideo(@PathVariable String videoId) {
         return videoRepository.findById(videoId)
@@ -60,7 +60,7 @@ public class VideoController {
 
     @Operation(
             summary = "Update a video",
-            description = "Updates the specified video from the database")
+            description = "Update the specified video from the database")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/videos/{id}")
     public void update(@Valid @RequestBody Video updatedVideo, @PathVariable String id) {
@@ -79,7 +79,7 @@ public class VideoController {
 
     @Operation(
             summary = "Delete a video",
-            description = "Deletes the specified video from the database")
+            description = "Delete the specified video from the database")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/videos/{id}")
     public void delete(@PathVariable String id) {

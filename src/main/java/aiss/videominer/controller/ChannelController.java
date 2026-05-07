@@ -40,7 +40,7 @@ public class ChannelController {
 
     @Operation(
             summary = "Get all channels",
-            description = "Gets all the channels from the database")
+            description = "Get all the channels from the database")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public List<Channel> getAllChannels() {
@@ -49,7 +49,7 @@ public class ChannelController {
 
     @Operation(
             summary = "Get a channel",
-            description = "Gets the specified channel from the database")
+            description = "Get the specified channel from the database")
     @GetMapping("/{id}")
     public Channel getChannel(@PathVariable String id) {
         return channelRepository.findById(id)
@@ -58,7 +58,7 @@ public class ChannelController {
 
     @Operation(
             summary = "Update a channel",
-            description = "Updates the specified channel from the database")
+            description = "Update the specified channel from the database")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
     public void update(@Valid @RequestBody Channel updatedChannel, @PathVariable String id){
@@ -75,7 +75,7 @@ public class ChannelController {
 
     @Operation(
             summary = "Delete a channel",
-            description = "Deletes the specified channel from the database")
+            description = "Delete the specified channel from the database")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void delete(@PathVariable String id){

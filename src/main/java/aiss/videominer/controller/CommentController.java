@@ -31,8 +31,8 @@ public class CommentController {
     VideoController videoController;
 
     @Operation(
-            summary = "Gets all comments from a video",
-            description = "Gets all the comments from a specified video")
+            summary = "Get all comments from a video",
+            description = "Get all the comments from a specified video")
     @GetMapping("/videos/{videoId}/comments")
     public List<Comment> getAllCommentsByVideoId(@PathVariable String videoId) {
         Video video = videoRepository.findById(videoId)
@@ -42,7 +42,7 @@ public class CommentController {
 
     @Operation(
             summary = "Get all comments",
-            description = "Gets all the comments from the database")
+            description = "Get all the comments from the database")
     @GetMapping("/comments")
     public List<Comment> getAllComments() {
         List<Video> videos = videoController.getAllVideos();
@@ -56,7 +56,7 @@ public class CommentController {
 
     @Operation(
             summary = "Get a comment",
-            description = "Gets the specified comment from the database")
+            description = "Get the specified comment from the database")
     @GetMapping("/comments/{commentId}")
     public Comment getComment(@PathVariable String commentId) {
         return commentRepository.findById(commentId)
@@ -65,7 +65,7 @@ public class CommentController {
 
     @Operation(
             summary = "Update a comment",
-            description = "Updates the specified comment from the database")
+            description = "Update the specified comment from the database")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/comments/{id}")
     public void update(@Valid @RequestBody Comment updatedComment, @PathVariable String id) {
@@ -80,7 +80,7 @@ public class CommentController {
 
     @Operation(
             summary = "Delete a comment",
-            description = "Deletes the specified comment from the database")
+            description = "Delete the specified comment from the database")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("comments/{id}")
     public void delete(@PathVariable String id) {

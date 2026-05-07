@@ -28,8 +28,8 @@ public class CaptionController {
     VideoController videoController;
 
     @Operation(
-            summary = "Gets all captions from a video",
-            description = "Gets all the captions from a specified video")
+            summary = "Get all captions from a video",
+            description = "Get all the captions from a specified video")
     @GetMapping("/videos/{videoId}/captions")
     public List<Caption> getAllCaptionsByVideoId(@PathVariable String videoId) {
         Video video = videoRepository.findById(videoId)
@@ -39,7 +39,7 @@ public class CaptionController {
 
     @Operation(
             summary = "Get all captions",
-            description = "Gets all the captions from the database")
+            description = "Get all the captions from the database")
     @GetMapping("/captions")
     public List<Caption> getAllCaptions() {
         return captionRepository.findAll();
@@ -47,7 +47,7 @@ public class CaptionController {
 
     @Operation(
             summary = "Get a caption",
-            description = "Gets the specified caption from the database")
+            description = "Get the specified caption from the database")
     @GetMapping("/captions/{captionId}")
     public Caption getCaption(@PathVariable String captionId) {
         return captionRepository.findById(captionId)
@@ -57,7 +57,7 @@ public class CaptionController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(
             summary = "Update a caption",
-            description = "Updates the specified caption from the database")
+            description = "Update the specified caption from the database")
     @PutMapping("/captions/{id}")
     public void update(@Valid @RequestBody Caption updatedCaption, @PathVariable String id) {
         Caption caption = captionRepository.findById(id)
@@ -71,7 +71,7 @@ public class CaptionController {
 
     @Operation(
             summary = "Delete a caption",
-            description = "Deletes the specified caption from the database")
+            description = "Delete the specified caption from the database")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("captions/{id}")
     public void delete(@PathVariable String id) {
