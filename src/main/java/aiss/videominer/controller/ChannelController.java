@@ -50,8 +50,14 @@ public class ChannelController {
                                         @RequestParam(defaultValue = "100") Integer size,
                                         @RequestParam(defaultValue = "0") Integer minVideos,
                                         @RequestParam(required = false) String order) {
-
         Pageable pageable=PageRequest.of(page,size);
+        if(order!=null){
+            if(order.charAt(0)=='-'){
+                pageable=PageRequest.of(page,size,Sort.by(order.substring(1)).descending());
+            }else{
+                pageable=PageRequest.of(page,size,Sort.by(order).ascending());
+            }
+        }
         Page<Channel> channelPage=channelRepository.findByVideoCountGreaterThan(minVideos,pageable);
         return channelPage.getContent();
 
