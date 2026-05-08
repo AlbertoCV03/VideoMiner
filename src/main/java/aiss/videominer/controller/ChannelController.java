@@ -1,6 +1,5 @@
 package aiss.videominer.controller;
 
-import aiss.videominer.exception.ChannelNotFoundException;
 import aiss.videominer.exception.ResourceNotFoundException;
 import aiss.videominer.model.Channel;
 import aiss.videominer.repository.ChannelRepository;
@@ -55,7 +54,7 @@ public class ChannelController {
 
             return pageChannel.getContent();
         }else if(size==null){
-            size=1;
+            size=10;
             Pageable pageable= PageRequest.of(page,size);
             Page<Channel> pageChannel =channelRepository.findAll(pageable);
 
