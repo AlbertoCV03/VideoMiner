@@ -45,22 +45,41 @@ public class ChannelController {
             description = "Get all the channels from the database")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<Channel> getAllChannels(@RequestParam(required = false) Integer page,@RequestParam(required = false) Integer size) {
+    public List<Channel> getAllChannels(@RequestParam(required = false) Integer page,
+                                        @RequestParam(required = false) Integer size,
+                                        @RequestParam(required = false) Integer minVideos) {
         if(page==null && size==null){
+            if(minVideos!=null){
+                size=Integer.MAX_VALUE;
+                Pageable pageable= PageRequest.ofSize(size);
+                Page<Channel> pageChannel= channelRepository.findByVideoCountGreaterThan(minVideos,pageable);
+                return pageChannel.getContent();
+            }
             return channelRepository.findAll();
         }else if(page==null){
             Pageable pageable= PageRequest.ofSize(size);
+            if(minVideos!=null){
+                Page<Channel> pageChannel =channelRepository.findByVideoCountGreaterThan(minVideos,pageable);
+                return pageChannel.getContent();
+            }
             Page<Channel> pageChannel =channelRepository.findAll(pageable);
 
             return pageChannel.getContent();
         }else if(size==null){
             size=10;
             Pageable pageable= PageRequest.of(page,size);
+            if(minVideos!=null){
+                Page<Channel> pageChannel =channelRepository.findByVideoCountGreaterThan(minVideos,pageable);
+                return pageChannel.getContent();
+            }
             Page<Channel> pageChannel =channelRepository.findAll(pageable);
-
             return pageChannel.getContent();
         }else{
             Pageable pageable= PageRequest.of(page,size);
+            if(minVideos!=null){
+                Page<Channel> pageChannel =channelRepository.findByVideoCountGreaterThan(minVideos,pageable);
+                return pageChannel.getContent();
+            }
             Page<Channel> pageChannel =channelRepository.findAll(pageable);
 
             return pageChannel.getContent();
