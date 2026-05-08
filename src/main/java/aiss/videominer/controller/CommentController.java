@@ -4,6 +4,7 @@ import aiss.videominer.exception.CommentNotFoundException;
 import aiss.videominer.exception.ResourceNotFoundException;
 import aiss.videominer.exception.VideoNotFoundException;
 import aiss.videominer.model.Caption;
+import aiss.videominer.model.Channel;
 import aiss.videominer.model.Comment;
 import aiss.videominer.model.Video;
 import aiss.videominer.repository.CommentRepository;
@@ -14,6 +15,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,26 +50,22 @@ public class CommentController {
             summary = "Get all comments",
             description = "Get all the comments from the database")
     @GetMapping("/comments")
-    public List<Comment> getAllComments(@RequestParam(required = false) Integer page,@RequestParam(required = false) Integer size) {
-        if(page==null && size==null){
-            return commentRepository.findAll();
-        }else if(page==null){
-            Pageable pageable= PageRequest.ofSize(size);
-            Page<Comment> pageComment =commentRepository.findAll(pageable);
+    public List<Comment> getAllComments(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "100") Integer size,
+            @RequestParam(required = false) String order) {
 
-            return pageComment.getContent();
-        }else if(size==null){
-            size=10;
-            Pageable pageable= PageRequest.of(page,size);
-            Page<Comment> pageComment =commentRepository.findAll(pageable);
-
-            return pageComment.getContent();
-        }else{
-            Pageable pageable= PageRequest.of(page,size);
-            Page<Comment> pageComment =commentRepository.findAll(pageable);
-
-            return pageComment.getContent();
-        }    }
+        Pageable pageable = PageRequest.of(page, size);
+        if (order != null) {
+            if (order.charAt(0) == '-') {
+                pageable = PageRequest.of(page, size, Sort.by(order.substring(1)).descending());
+            } else {
+                pageable = PageRequest.of(page, size, Sort.by(order).ascending());
+            }
+        }
+        Page<Comment> commentPage = commentRepository.findAll(pageable);
+        return commentPage.getContent();
+    }
 
     @Operation(
             summary = "Get a comment",
