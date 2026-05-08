@@ -2,12 +2,16 @@ package aiss.videominer.controller;
 
 import aiss.videominer.exception.ResourceNotFoundException;
 import aiss.videominer.model.Caption;
+import aiss.videominer.model.Channel;
 import aiss.videominer.model.Video;
 import aiss.videominer.repository.CaptionRepository;
 import aiss.videominer.repository.VideoRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +45,27 @@ public class CaptionController {
             summary = "Get all captions",
             description = "Get all the captions from the database")
     @GetMapping("/captions")
-    public List<Caption> getAllCaptions() {
-        return captionRepository.findAll();
+    public List<Caption> getAllCaptions(@RequestParam(required = false) Integer page,@RequestParam(required = false) Integer size) {
+        if(page==null && size==null){
+            return captionRepository.findAll();
+        }else if(page==null){
+            Pageable pageable= PageRequest.ofSize(size);
+            Page<Caption> pageCaption =captionRepository.findAll(pageable);
+
+            return pageCaption.getContent();
+        }else if(size==null){
+            size=10;
+            Pageable pageable= PageRequest.of(page,size);
+            Page<Caption> pageCaption =captionRepository.findAll(pageable);
+
+            return pageCaption.getContent();
+        }else{
+            Pageable pageable= PageRequest.of(page,size);
+            Page<Caption> pageCaption =captionRepository.findAll(pageable);
+
+            return pageCaption.getContent();
+        }
+
     }
 
     @Operation(
