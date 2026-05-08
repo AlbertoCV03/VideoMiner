@@ -12,6 +12,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,8 +46,27 @@ public class ChannelController {
             description = "Get all the channels from the database")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<Channel> getAllChannels() {
-        return channelRepository.findAll();
+    public List<Channel> getAllChannels(@RequestParam(required = false) Integer page,@RequestParam(required = false) Integer size) {
+        if(page==null && size==null){
+            return channelRepository.findAll();
+        }else if(page==null){
+            Pageable pageable= PageRequest.ofSize(size);
+            Page<Channel> pageChannel =channelRepository.findAll(pageable);
+
+            return pageChannel.getContent();
+        }else if(size==null){
+            size=1;
+            Pageable pageable= PageRequest.of(page,size);
+            Page<Channel> pageChannel =channelRepository.findAll(pageable);
+
+            return pageChannel.getContent();
+        }else{
+            Pageable pageable= PageRequest.of(page,size);
+            Page<Channel> pageChannel =channelRepository.findAll(pageable);
+
+            return pageChannel.getContent();
+        }
+
     }
 
     @Operation(
