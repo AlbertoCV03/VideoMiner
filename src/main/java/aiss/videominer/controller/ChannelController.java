@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,28 +46,14 @@ public class ChannelController {
             description = "Get all the channels from the database")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<Channel> getAllChannels(@RequestParam(required = false) Integer page,
-                                        @RequestParam(required = false) Integer size,
-                                        @RequestParam(required = false) Integer minVideos) {
+    public List<Channel> getAllChannels(@RequestParam(defaultValue = "0") Integer page,
+                                        @RequestParam(defaultValue = "100") Integer size,
+                                        @RequestParam(defaultValue = "0") Integer minVideos,
+                                        @RequestParam(required = false) String order) {
 
-        Pageable pageable;
-        if(page==null && size==null && minVideos==null) {
-            return channelRepository.findAll();
-        }
-
-        if(page==null) {
-            page=0;
-        }
-        if(size==null){
-            size=10;
-        }
-        pageable=PageRequest.of(page,size);
-        if(minVideos==null){
-            Page<Channel> channelPage=channelRepository.findAll(pageable);
-            return channelPage.getContent();
-        }else{
-            return channelRepository.findByVideoCountGreaterThanNoPagination(minVideos);
-        }
+        Pageable pageable=PageRequest.of(page,size);
+        Page<Channel> channelPage=channelRepository.findByVideoCountGreaterThan(minVideos,pageable);
+        return channelPage.getContent();
 
     }
 

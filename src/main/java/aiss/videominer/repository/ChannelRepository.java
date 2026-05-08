@@ -22,13 +22,4 @@ public interface ChannelRepository extends JpaRepository<Channel,String> {
             @Param("count") int count,
             Pageable pageable
     );
-
-    @Query("""
-    SELECT channel
-    FROM Channel channel
-    WHERE SIZE(channel.videos) >= :count
-""")
-    List<Channel> findByVideoCountGreaterThanNoPagination(
-            @Param("count") int count
-    );
 }
