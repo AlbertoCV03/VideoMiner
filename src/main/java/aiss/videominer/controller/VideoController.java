@@ -17,6 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 @Tag(name = "Video",description = "Video operations")
@@ -43,25 +46,59 @@ public class VideoController {
             summary = "Get all videos",
             description = "Get all the videos from the database")
     @GetMapping("/videos")
-    public List<Video> getAllVideos(@RequestParam(required = false) Integer page,@RequestParam(required = false) Integer size) {
-        if(page==null && size==null){
-            return videoRepository.findAll();
-        }else if(page==null){
-            Pageable pageable= PageRequest.ofSize(size);
-            Page<Video> pageVideo =videoRepository.findAll(pageable);
+    public List<Video> getAllVideos(
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "100") Integer size,
+            @RequestParam(required = false) String findDate,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month,
+            @RequestParam(required = false) Integer day) {
+        Pageable pageable=PageRequest.of(page,size);
+        Page<Video> videoPage=videoRepository.findAll(pageable);
+        List<Video> paginados=videoPage.getContent();
 
-            return pageVideo.getContent();
-        }else if(size==null){
-            size=10;
-            Pageable pageable= PageRequest.of(page,size);
-            Page<Video> pageVideo =videoRepository.findAll(pageable);
-
-            return pageVideo.getContent();
-        }else{
-            Pageable pageable= PageRequest.of(page,size);
-            Page<Video> pageVideo =videoRepository.findAll(pageable);
-
-            return pageVideo.getContent();
+        if(findDate==null && year==null) {
+            return paginados;
+        } else if(year!=null){
+            List<Video> res=new ArrayList<>();
+            LocalDate targetDate =
+                    LocalDate.of(
+                            year,
+                            month==null?1:month,
+                            day==null?1:day
+                    );
+            for(Video video: paginados) {
+                Instant instant=Instant.parse(video.getReleaseTime());
+                LocalDate date=instant.atZone(ZoneOffset.UTC).toLocalDate();
+                if(findDate==null || findDate.equals("exact")) {
+                    if (date.getYear()==year && month==null && day==null) {
+                        res.add(video);
+                    } else if (date.getYear()==year && month!=null && date.getMonthValue()==month && day==null){
+                        res.add(video);
+                    } else if(date.equals(targetDate)) {
+                        res.add(video);
+                    }
+                } else if(findDate.equals("before")) {
+                    if (date.getYear()<year && month==null && day==null) {
+                        res.add(video);
+                    } else if (date.getYear()<year && month!=null && date.getMonthValue()<month && day==null){
+                        res.add(video);
+                    } else if(date.isBefore(targetDate)) {
+                        res.add(video);
+                    }
+                } else if(findDate.equals("after")) {
+                    if (date.getYear()>year && month==null && day==null) {
+                        res.add(video);
+                    } else if (date.getYear()>year && month!=null && date.getMonthValue()>month && day==null){
+                        res.add(video);
+                    } else if(date.isAfter(targetDate) || date.isEqual(targetDate)) {
+                        res.add(video);
+                    }
+                }
+            }
+            return res;
+        } else {
+            return paginados;
         }
     }
 
