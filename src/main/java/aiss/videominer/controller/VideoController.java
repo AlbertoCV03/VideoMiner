@@ -2,6 +2,7 @@ package aiss.videominer.controller;
 
 import aiss.videominer.exception.ResourceNotFoundException;
 import aiss.videominer.exception.VideoNotFoundException;
+import aiss.videominer.model.Caption;
 import aiss.videominer.model.Channel;
 import aiss.videominer.model.Video;
 import aiss.videominer.repository.ChannelRepository;
@@ -9,6 +10,9 @@ import aiss.videominer.repository.VideoRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,14 +43,26 @@ public class VideoController {
             summary = "Get all videos",
             description = "Get all the videos from the database")
     @GetMapping("/videos")
-    public List<Video> getAllVideos() {
-        List<Channel> channels = channelRepository.findAll();
-        List<Video> videos = new ArrayList<>();
+    public List<Video> getAllVideos(@RequestParam(required = false) Integer page,@RequestParam(required = false) Integer size) {
+        if(page==null && size==null){
+            return videoRepository.findAll();
+        }else if(page==null){
+            Pageable pageable= PageRequest.ofSize(size);
+            Page<Video> pageVideo =videoRepository.findAll(pageable);
 
-        for (Channel channel : channels) {
-            videos.addAll(channel.getVideos());
+            return pageVideo.getContent();
+        }else if(size==null){
+            size=10;
+            Pageable pageable= PageRequest.of(page,size);
+            Page<Video> pageVideo =videoRepository.findAll(pageable);
+
+            return pageVideo.getContent();
+        }else{
+            Pageable pageable= PageRequest.of(page,size);
+            Page<Video> pageVideo =videoRepository.findAll(pageable);
+
+            return pageVideo.getContent();
         }
-        return videos;
     }
 
     @Operation(

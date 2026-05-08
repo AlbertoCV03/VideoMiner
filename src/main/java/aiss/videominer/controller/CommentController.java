@@ -3,6 +3,7 @@ package aiss.videominer.controller;
 import aiss.videominer.exception.CommentNotFoundException;
 import aiss.videominer.exception.ResourceNotFoundException;
 import aiss.videominer.exception.VideoNotFoundException;
+import aiss.videominer.model.Caption;
 import aiss.videominer.model.Comment;
 import aiss.videominer.model.Video;
 import aiss.videominer.repository.CommentRepository;
@@ -10,6 +11,9 @@ import aiss.videominer.repository.VideoRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,15 +48,26 @@ public class CommentController {
             summary = "Get all comments",
             description = "Get all the comments from the database")
     @GetMapping("/comments")
-    public List<Comment> getAllComments() {
-        List<Video> videos = videoController.getAllVideos();
-        List<Comment> comments = new ArrayList<>();
+    public List<Comment> getAllComments(@RequestParam(required = false) Integer page,@RequestParam(required = false) Integer size) {
+        if(page==null && size==null){
+            return commentRepository.findAll();
+        }else if(page==null){
+            Pageable pageable= PageRequest.ofSize(size);
+            Page<Comment> pageComment =commentRepository.findAll(pageable);
 
-        for (Video video : videos) {
-            comments.addAll(video.getComments());
-        }
-        return comments;
-    }
+            return pageComment.getContent();
+        }else if(size==null){
+            size=10;
+            Pageable pageable= PageRequest.of(page,size);
+            Page<Comment> pageComment =commentRepository.findAll(pageable);
+
+            return pageComment.getContent();
+        }else{
+            Pageable pageable= PageRequest.of(page,size);
+            Page<Comment> pageComment =commentRepository.findAll(pageable);
+
+            return pageComment.getContent();
+        }    }
 
     @Operation(
             summary = "Get a comment",
