@@ -14,9 +14,9 @@ import java.util.List;
 @Repository
 public interface ChannelRepository extends JpaRepository<Channel,String> {
     @Query("""
-    SELECT c
-    FROM Channel c
-    WHERE SIZE(c.videos) >= :count
+    SELECT channel
+    FROM Channel channel
+    WHERE SIZE(channel.videos) >= :count
 """)
     Page<Channel> findByVideoCountGreaterThan(
             @Param("count") int count,
@@ -24,9 +24,9 @@ public interface ChannelRepository extends JpaRepository<Channel,String> {
     );
 
     @Query("""
-    SELECT c
-    FROM Channel c
-    WHERE SIZE(c.videos) >= :count
+    SELECT channel
+    FROM Channel channel
+    WHERE SIZE(channel.videos) >= :count
 """)
     List<Channel> findByVideoCountGreaterThanNoPagination(
             @Param("count") int count

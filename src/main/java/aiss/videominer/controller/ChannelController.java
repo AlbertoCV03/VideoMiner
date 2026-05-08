@@ -48,39 +48,24 @@ public class ChannelController {
     public List<Channel> getAllChannels(@RequestParam(required = false) Integer page,
                                         @RequestParam(required = false) Integer size,
                                         @RequestParam(required = false) Integer minVideos) {
-        if(page==null && size==null){
-            if(minVideos!=null){
-                List<Channel> channels= channelRepository.findByVideoCountGreaterThanNoPagination(minVideos);
-                return channels;
-            }
+
+        Pageable pageable;
+        if(page==null && size==null && minVideos==null) {
             return channelRepository.findAll();
-        }else if(page==null){
-            Pageable pageable= PageRequest.ofSize(size);
-            if(minVideos!=null){
-                Page<Channel> pageChannel =channelRepository.findByVideoCountGreaterThan(minVideos,pageable);
-                return pageChannel.getContent();
-            }
-            Page<Channel> pageChannel =channelRepository.findAll(pageable);
+        }
 
-            return pageChannel.getContent();
-        }else if(size==null){
+        if(page==null) {
+            page=0;
+        }
+        if(size==null){
             size=10;
-            Pageable pageable= PageRequest.of(page,size);
-            if(minVideos!=null){
-                Page<Channel> pageChannel =channelRepository.findByVideoCountGreaterThan(minVideos,pageable);
-                return pageChannel.getContent();
-            }
-            Page<Channel> pageChannel =channelRepository.findAll(pageable);
-            return pageChannel.getContent();
+        }
+        pageable=PageRequest.of(page,size);
+        if(minVideos==null){
+            Page<Channel> channelPage=channelRepository.findAll(pageable);
+            return channelPage.getContent();
         }else{
-            Pageable pageable= PageRequest.of(page,size);
-            if(minVideos!=null){
-                Page<Channel> pageChannel =channelRepository.findByVideoCountGreaterThan(minVideos,pageable);
-                return pageChannel.getContent();
-            }
-            Page<Channel> pageChannel =channelRepository.findAll(pageable);
-
-            return pageChannel.getContent();
+            return channelRepository.findByVideoCountGreaterThanNoPagination(minVideos);
         }
 
     }
