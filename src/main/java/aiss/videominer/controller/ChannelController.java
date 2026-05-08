@@ -50,10 +50,8 @@ public class ChannelController {
                                         @RequestParam(required = false) Integer minVideos) {
         if(page==null && size==null){
             if(minVideos!=null){
-                size=Integer.MAX_VALUE;
-                Pageable pageable= PageRequest.ofSize(size);
-                Page<Channel> pageChannel= channelRepository.findByVideoCountGreaterThan(minVideos,pageable);
-                return pageChannel.getContent();
+                List<Channel> channels= channelRepository.findByVideoCountGreaterThanNoPagination(minVideos);
+                return channels;
             }
             return channelRepository.findAll();
         }else if(page==null){

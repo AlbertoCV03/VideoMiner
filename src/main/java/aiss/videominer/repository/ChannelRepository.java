@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ChannelRepository extends JpaRepository<Channel,String> {
     @Query("""
@@ -19,5 +21,14 @@ public interface ChannelRepository extends JpaRepository<Channel,String> {
     Page<Channel> findByVideoCountGreaterThan(
             @Param("count") int count,
             Pageable pageable
+    );
+
+    @Query("""
+    SELECT c
+    FROM Channel c
+    WHERE SIZE(c.videos) >= :count
+""")
+    List<Channel> findByVideoCountGreaterThanNoPagination(
+            @Param("count") int count
     );
 }
