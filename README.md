@@ -1,6 +1,6 @@
 # VideoMiner API
 
-REST API for retrieving, adapting and storing channel data.
+REST API for retrieving, consulting and storing channel data.
 
 ## General Information
 
