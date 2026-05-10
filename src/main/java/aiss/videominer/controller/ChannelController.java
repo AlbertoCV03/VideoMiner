@@ -235,10 +235,6 @@ public class ChannelController {
             description = "Update the specified channel from the database")
     @ApiResponses({
             @ApiResponse(
-                    responseCode = "204 No Content",
-                    description = "Channel successfully updated"
-                    ),
-            @ApiResponse(
                     responseCode = "404",
                     description="❌ **Channel not found**",
                     content = { @Content(schema = @Schema()) })
@@ -263,10 +259,6 @@ public class ChannelController {
             summary = "Delete a channel",
             description = "Delete the specified channel from the database")
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "204 No Content",
-                    description = "Channel successfully deleted"
-            ),
             @ApiResponse(
                     responseCode = "404",
                     description="❌ **Channel not found**",
