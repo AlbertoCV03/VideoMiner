@@ -20,7 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
-@Tag(name = "Caption",description = "Caption operations")
+
+@Tag(name = "Caption", description = "Caption operations")
 @RestController
 @RequestMapping("/videominer")
 public class CaptionController {
@@ -33,9 +34,7 @@ public class CaptionController {
     @Autowired
     VideoController videoController;
 
-    @Operation(
-            summary = "Get all captions from a video",
-            description = "Get all the captions from a specified video")
+    @Operation(summary = "Get all captions from a video", description = "Get all the captions from a specified video")
     @GetMapping("/videos/{videoId}/captions")
     public List<Caption> getAllCaptionsByVideoId(@PathVariable String videoId) {
         Video video = videoRepository.findById(videoId)
@@ -43,14 +42,14 @@ public class CaptionController {
         return new ArrayList<>(video.getCaptions());
     }
 
-    @Operation(
-            summary = "Get all captions",
-            description = "Get all the captions from the database")
+    @Operation(summary = "Get all captions", description = "Get all the captions from the database with optional language filter")
     @GetMapping("/captions")
     public List<Caption> getAllCaptions(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "100") Integer size,
-            @RequestParam(required = false) String order) {
+            @RequestParam(required = false) String order,
+            @RequestParam(required = false) String language) {
+
         Pageable pageable = PageRequest.of(page, size);
         if (order != null) {
             if (order.charAt(0) == '-') {
@@ -59,13 +58,18 @@ public class CaptionController {
                 pageable = PageRequest.of(page, size, Sort.by(order).ascending());
             }
         }
-        Page<Caption> captionPage = captionRepository.findAll(pageable);
+
+        Page<Caption> captionPage;
+        if (language != null) {
+            captionPage = captionRepository.findByLanguage(language, pageable);
+        } else {
+            captionPage = captionRepository.findAll(pageable);
+        }
+
         return captionPage.getContent();
     }
 
-    @Operation(
-            summary = "Get a caption",
-            description = "Get the specified caption from the database")
+    @Operation(summary = "Get a caption", description = "Get the specified caption from the database")
     @GetMapping("/captions/{captionId}")
     public Caption getCaption(@PathVariable String captionId) {
         return captionRepository.findById(captionId)
@@ -73,9 +77,7 @@ public class CaptionController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(
-            summary = "Update a caption",
-            description = "Update the specified caption from the database")
+    @Operation(summary = "Update a caption", description = "Update the specified caption from the database")
     @PutMapping("/captions/{id}")
     public void update(@Valid @RequestBody Caption updatedCaption, @PathVariable String id) {
         Caption caption = captionRepository.findById(id)
@@ -87,9 +89,7 @@ public class CaptionController {
         captionRepository.save(caption);
     }
 
-    @Operation(
-            summary = "Delete a caption",
-            description = "Delete the specified caption from the database")
+    @Operation(summary = "Delete a caption", description = "Delete the specified caption from the database")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("captions/{id}")
     public void delete(@PathVariable String id) {

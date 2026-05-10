@@ -23,7 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-@Tag(name = "Comment",description = "Comment operations")
+
+@Tag(name = "Comment", description = "Comment operations")
 @RestController
 @RequestMapping("/videominer")
 public class CommentController {
@@ -36,9 +37,7 @@ public class CommentController {
     @Autowired
     VideoController videoController;
 
-    @Operation(
-            summary = "Get all comments from a video",
-            description = "Get all the comments from a specified video")
+    @Operation(summary = "Get all comments from a video", description = "Get all the comments from a specified video")
     @GetMapping("/videos/{videoId}/comments")
     public List<Comment> getAllCommentsByVideoId(@PathVariable String videoId) {
         Video video = videoRepository.findById(videoId)
@@ -46,14 +45,13 @@ public class CommentController {
         return new ArrayList<>(video.getComments());
     }
 
-    @Operation(
-            summary = "Get all comments",
-            description = "Get all the comments from the database")
+    @Operation(summary = "Get all comments", description = "Get all the comments from the database with optional author filter")
     @GetMapping("/comments")
     public List<Comment> getAllComments(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "100") Integer size,
-            @RequestParam(required = false) String order) {
+            @RequestParam(required = false) String order,
+            @RequestParam(required = false) String authorName) {
 
         Pageable pageable = PageRequest.of(page, size);
         if (order != null) {
@@ -63,22 +61,25 @@ public class CommentController {
                 pageable = PageRequest.of(page, size, Sort.by(order).ascending());
             }
         }
-        Page<Comment> commentPage = commentRepository.findAll(pageable);
+
+        Page<Comment> commentPage;
+        if (authorName != null) {
+            commentPage = commentRepository.findByAuthorName(authorName, pageable);
+        } else {
+            commentPage = commentRepository.findAll(pageable);
+        }
+
         return commentPage.getContent();
     }
 
-    @Operation(
-            summary = "Get a comment",
-            description = "Get the specified comment from the database")
+    @Operation(summary = "Get a comment", description = "Get the specified comment from the database")
     @GetMapping("/comments/{commentId}")
     public Comment getComment(@PathVariable String commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment", commentId));
     }
 
-    @Operation(
-            summary = "Update a comment",
-            description = "Update the specified comment from the database")
+    @Operation(summary = "Update a comment", description = "Update the specified comment from the database")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/comments/{id}")
     public void update(@Valid @RequestBody Comment updatedComment, @PathVariable String id) {
@@ -91,9 +92,7 @@ public class CommentController {
         commentRepository.save(comment);
     }
 
-    @Operation(
-            summary = "Delete a comment",
-            description = "Delete the specified comment from the database")
+    @Operation(summary = "Delete a comment", description = "Delete the specified comment from the database")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("comments/{id}")
     public void delete(@PathVariable String id) {
