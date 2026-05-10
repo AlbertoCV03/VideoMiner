@@ -8,6 +8,7 @@ import aiss.videominer.model.Video;
 import aiss.videominer.repository.ChannelRepository;
 import aiss.videominer.repository.VideoRepository;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -47,12 +48,12 @@ public class VideoController {
             description = "Get all the videos from the database")
     @GetMapping("/videos")
     public List<Video> getAllVideos(
-            @RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "100") Integer size,
-            @RequestParam(required = false) String findDate,
-            @RequestParam(required = false) Integer year,
-            @RequestParam(required = false) Integer month,
-            @RequestParam(required = false) Integer day) {
+            @Parameter(description = "Select the page to be retrieved")@RequestParam(required = false, defaultValue = "0") Integer page,
+            @Parameter(description = "Select the size of each retrieved page")@RequestParam(required = false, defaultValue = "100") Integer size,
+            @Parameter(description = "Selects the date filtering mode applied to the video search. Supported values are: 'after', 'exact', and 'before'. This parameter requires at least a 'year' value; otherwise, the filter will be ignored because there is no reference date. If a date filter is applied without specifying this parameter, the default mode will be 'exact'")@RequestParam(required = false) String findDate,
+            @Parameter(description = "Reference year used to filter videos by date")@RequestParam(required = false) Integer year,
+            @Parameter(description = "Reference month used to filter videos by date. This parameter must always be used together with 'year'")@RequestParam(required = false) Integer month,
+            @Parameter(description = "Reference day used to filter videos by date. This parameter must always be used together with both 'year' and 'month'")@RequestParam(required = false) Integer day) {
         Pageable pageable=PageRequest.of(page,size);
         Page<Video> videoPage=videoRepository.findAll(pageable);
         List<Video> paginados=videoPage.getContent();
