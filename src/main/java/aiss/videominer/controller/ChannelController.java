@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 @Tag(name = "Channel",description = "Channel operations")
 @RestController
@@ -236,22 +239,49 @@ public class ChannelController {
             description = "Get all the channels from the database")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
+
+    //Due to pagination being done first, the sorting and filtering will only be correct at a page level
+    //Values like id or createdTime being string means the Sort.By will sort them as such. Changing them to Integer and DateTime will make sorting easier.
+    //To properly sort based on the expected type each name suggest it has to be done like this (It's only going to be done here due to time constrains):
     public List<Channel> getAllChannels(
             @Parameter(description = "Select the page to be retrieved")@RequestParam(defaultValue = "0") Integer page,
             @Parameter(description = "Select the size of each retrieved page")@RequestParam(defaultValue = "100") Integer size,
             @Parameter(description = "Minimum number of videos a channel must have to be retrieved")@RequestParam(defaultValue = "0") Integer minVideos,
-            @Parameter(description = "Sort the results in alphabetical order. To select the property the sorting will be based on, use its property name as the parameter value. Use '-' before the property name to sort in descending order")@RequestParam(required = false) String order) {
+            @Parameter(description = "Sort the results either by id,name or createdTime. Use '-' before the property name to sort in descending order")@RequestParam(required = false) String order) {
         Pageable pageable=PageRequest.of(page,size);
-        if(order!=null){
-            if(order.charAt(0)=='-'){
-                pageable=PageRequest.of(page,size,Sort.by(order.substring(1)).descending());
-            }else{
-                pageable=PageRequest.of(page,size,Sort.by(order).ascending());
+        Page<Channel> channelPage=channelRepository.findByVideoCountGreaterThan(minVideos,pageable);
+
+        List<Channel> channels = new ArrayList<>(channelPage.getContent());
+        if (order != null) {
+            boolean descending = order.startsWith("-");
+            Comparator<Channel> comparator = getChannelComparator(order, descending);
+
+            if (comparator != null) {
+                if (descending) {
+                    comparator = comparator.reversed();
+                }
+
+                channels.sort(comparator);
             }
         }
-        Page<Channel> channelPage=channelRepository.findByVideoCountGreaterThan(minVideos,pageable);
-        return channelPage.getContent();
 
+        return channels;
+
+    }
+
+    private static @Nullable Comparator<Channel> getChannelComparator(String order, boolean descending) {
+        String field = descending ? order.substring(1) : order;
+        Comparator<Channel> comparator = switch (field) {
+            case "id" -> Comparator.comparing(
+                    c -> Integer.parseInt(c.getId())
+            );
+            case "createdTime" -> Comparator.comparing(
+                    c -> java.time.Instant.parse(c.getCreatedTime())
+            );
+            case "name" -> Comparator.comparing(Channel::getName);
+            default -> null;
+        };
+        return comparator;
     }
 
     @Operation(
@@ -293,5 +323,10 @@ public class ChannelController {
         if (channelRepository.existsById(id)) {
             channelRepository.deleteById(id);
         }
+    }
+    @PostMapping("/all")
+    @ResponseStatus(HttpStatus.CREATED)
+    public List<Channel> addAllChannels(@Valid@RequestBody List<Channel> channels) {
+        return channelRepository.saveAll(channels);
     }
 }
